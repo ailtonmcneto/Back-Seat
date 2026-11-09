@@ -1,0 +1,1 @@
+Pasta do Arthur: câmera, GameManager, sala limpa, saída bloqueada, respawn, carro, áudio.

@@ -1,0 +1,1 @@
+Pasta do Lipe: scripts do inimigo (patrulha, linha de visão, detecção, alerta, esquecimento, morte).

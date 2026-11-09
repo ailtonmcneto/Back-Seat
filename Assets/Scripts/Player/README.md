@@ -1,0 +1,1 @@
+Pasta do Ailton: scripts do jogador (movimento, mira, ataque, pegar arma, morte).

@@ -1,0 +1,1 @@
+Pasta do Arthur: menu, tela de morte, tela de fim, avisos, HUD e pausa.
