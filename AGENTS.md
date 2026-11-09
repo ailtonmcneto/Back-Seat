@@ -6,7 +6,7 @@ Leia tudo antes de mexer em qualquer arquivo.
 ## O projeto
 
 - Jogo 2D top-down, preto e branco, ambientação noir. **Um golpe mata, dos dois lados.**
-- Unity + C# (2D, URP). A versão do Unity está em `ProjectSettings/ProjectVersion.txt`. Não troque de versão.
+- Unity 6 (**6000.5.9f1**) + C#, 2D com URP. A versão está em `ProjectSettings/ProjectVersion.txt`. Não troque de versão.
 - Equipe de iniciantes em Unity e C#. **O código precisa ser simples o bastante para o dono explicar na apresentação.**
 - Apresentação em 07/12. Versão final em 04/12. Não há tempo para refatorações grandes.
 
@@ -58,8 +58,9 @@ Para testar sem a parte do colega, use uma peça falsa na sua cena de teste, nun
 - `PascalCase` para classes e métodos, `camelCase` para variáveis. Um `MonoBehaviour` por arquivo, com o mesmo nome do arquivo.
 - Campos ajustáveis: `[SerializeField] private float detectionTime = 0.8f;` com o valor do GDD como padrão. Nada de números mágicos no meio do código.
 - Física: `Rigidbody2D` e `Collider2D`. Movimento do jogador e do inimigo em `FixedUpdate`, leitura de input em `Update`.
+- **Input: use só o Input System novo** (`using UnityEngine.InputSystem;`). O projeto está configurado só para ele, então `Input.GetKey`, `Input.GetAxis` e `Input.mousePosition` (o jeito antigo, comum em tutoriais) **dão erro**. Para o MVP, leia direto do dispositivo: `Keyboard.current.wKey.isPressed`, `Keyboard.current.eKey.wasPressedThisFrame`, `Mouse.current.leftButton.wasPressedThisFrame`, `Mouse.current.position.ReadValue()`. Não edite o arquivo `Assets/Settings/InputSystem_Actions.inputactions`.
 - Linha de visão: `Physics2D.Linecast` com máscara da camada `Walls`.
-- Nada de pacote novo, plugin ou asset da Asset Store sem acordo da equipe (exceção já aceita: Cinemachine, TextMeshPro, URP).
+- Nada de pacote novo, plugin ou asset da Asset Store sem acordo da equipe. Já aceitos: URP e Input System (instalados), Cinemachine e TextMeshPro (o Arthur instala quando chegar na câmera e nas telas). O agente não instala pacote: se precisar de um, diga no fim da resposta.
 - Prefira código curto e direto a padrões elaborados. Sem herança profunda, sem injeção de dependência, sem `async`.
 
 ## Valores do GDD
