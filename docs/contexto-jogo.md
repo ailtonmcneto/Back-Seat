@@ -1,7 +1,7 @@
 # Contexto — BACKSEAT (Projeto Extensionista)
 
 > Anexe este arquivo no início de uma nova conversa para retomar o projeto de onde paramos.
-> Última atualização: 09/11/2026 — **Unity + C#. Nada implementado ainda. Foco total no MVP (seção 3).**
+> Última atualização: 10/11/2026 — **Unity + C#. Setup feito e movimento do jogador pronto (PR aberto). Foco total no MVP (seção 3).**
 >
 > **Como ler este arquivo:** toda seção separa **MVP** (o que será feito até 04/12) de **Pós-MVP** (desenho do GDD que só entra se sobrar tempo depois do MVP pronto). Na dúvida, vale o MVP.
 
@@ -15,14 +15,20 @@
 - **GDD:** entregue e avaliado pelo professor; aguardando nota. O GDD avaliado cita LibGDX; a troca de engine precisa ser avisada ao professor.
 - **Experiência:** nenhuma com jogos, Unity ou C#.
 - **Tempo:** 3h/semana por pessoa (~30h de equipe até 04/12). O estudo de Java (Portão 0) continua fora deste projeto.
-- **Estado em 09/11:** só o repositório existe. Nenhum código.
+- **Estado em 10/11:**
+  - **Setup do projeto concluído (Ailton, 09/11):** Unity **6000.5.9f1**, 2D URP, `.gitignore` do Unity, tag `Enemy`, camadas `Walls` (6) e `Weapon` (7), cenas `Main`, `Test_Ailton`, `Test_Arthur`, `Test_Lipe`, pastas `Scripts/{Contracts,Player,Enemy,Game,UI}` com `README.md`, `Contracts.cs`, `AGENTS.md`, `CLAUDE.md`, modelo de PR e `docs/contexto-jogo.md` na `main`.
+  - **Movimento do jogador pronto e testado:** `PlayerMovement.cs` na branch `ailton/movimento`, PR aberto para a `main` com o Arthur como revisor. Merge previsto na reunião de quarta (11/11).
+  - Arthur e Lipe ainda precisam clonar e abrir o projeto (gatilho de 11/11).
+  - Cinemachine e TextMeshPro ainda não instalados (o Arthur instala na câmera e nas telas).
 
 ---
 
 ## 2. Stack e ferramentas
 
 - **Unity + C#**, projeto 2D com URP. **Mesma versão LTS nos três computadores** (registrada em `ProjectSettings/ProjectVersion.txt`).
-- **Pacotes aceitos:** Cinemachine, TextMeshPro, URP. Nada além disso sem acordo da equipe.
+- **Versão: Unity 6000.5.9f1** (os três precisam da mesma).
+- **Pacotes:** URP e Input System instalados; Cinemachine e TextMeshPro aceitos, ainda não instalados. Nada além disso sem acordo da equipe.
+- **Input: só o Input System novo** (`Keyboard.current`, `Mouse.current`). O jeito antigo (`Input.GetKey`) dá erro neste projeto.
 - **Código com Claude Code e Codex**, guiados pelo `AGENTS.md` do repositório (o `CLAUDE.md` só aponta para ele).
 - **Git + GitHub**, com `.gitignore` padrão do Unity.
 
@@ -316,6 +322,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
    - `Scripts/Player` (Ailton), `Scripts/Enemy` (Lipe), `Scripts/Game` e `Scripts/UI` (Arthur), `Scripts/Contracts` (os três).
    - Cena `Main`: só o Ailton salva. Cenas de teste: `Test_Ailton`, `Test_Lipe`, `Test_Arthur`.
    - `ProjectSettings` (tags, camadas, input, versão): só o Ailton.
+   - `Assets/Physics/` (materiais de física, como o `PlayerNoFriction`): Ailton. Proposta a confirmar na reunião e a incluir no `AGENTS.md`.
 4. **PRs documentados** com `.github/pull_request_template.md`: o que mudou, contratos usados, como testar, passos no editor depois do merge e **explicação escrita pelo dono**.
 5. **Reunião semanal: segunda, 19h30–20h30, em chamada.** Sai das 3h de cada um. **A primeira é na quarta, 11/11.**
    - ~10 min: o que cada um terminou e onde travou
@@ -324,6 +331,16 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
    - ~10 min: tarefas da semana e mudanças no `Contracts.cs`
 
 **Entre reuniões:** ao fim de cada sessão, mensagem no grupo: "Fiz X. Abri o PR Y. Travei em Z."
+
+**Ciclo de cada tarefa (como o Ailton trabalha com os agentes):**
+1. A tarefa é aprofundada no chat do Project: decisões técnicas, critérios de pronto e o prompt.
+2. O prompt manda ler o `AGENTS.md` e a seção do `docs/contexto-jogo.md`; tem REQUISITOS, ESCOPO fechado ("somente o que está em REQUISITOS, nada além; mesmo que pareça útil"), NÃO FAÇA, e o formato de retorno: arquivos, código, explicação para iniciante, **decisões que tomou sozinho**, passos no editor, como testar, dúvidas ou riscos, descrição do PR.
+3. O agente escreve, faz commit só do script na branch e push. Não abre PR nem faz merge.
+4. O dono abre o Unity, espera compilar e faz commit do `.meta` **antes** de qualquer cena usar o script.
+5. O dono faz os passos no editor na cena de teste, confere cada objeto contra a lista e testa em Play Mode. No Unity a prova é o teste jogando, não testes automáticos.
+6. O retorno do agente vem para o chat; a revisão começa pelas decisões que ele tomou sozinho.
+7. O dono salva a cena (Ctrl+S), faz commit e abre o PR pelo site. A explicação do PR é escrita ou revisada pelo dono e conferida no chat.
+8. Cuidado de Git: criar a branch a partir da `main` atualizada (`git pull` antes). A próxima tarefa pode sair da branch anterior se ela ainda não tiver merge.
 
 **Peças falsas para trabalhar em paralelo:** Ailton testa com um quadrado que implementa `IHittable` e some; Lipe testa com um quadrado de tag `Player` arrastado na cena; Arthur testa com teclas de depuração (K chama `RaisePlayerDied`, L chama `RaiseEnemyDied`).
 
@@ -335,7 +352,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
 
 | Semana | Período | Ailton | Lipe | Arthur |
 |---|---|---|---|---|
-| **U1** | 09–15/11 | **Até 11/11: projeto Unity, `.gitignore`, tags e camadas, `Contracts.cs`, `AGENTS.md`, modelo de PR; os três abrem.** Depois: jogador andando e mirando com colisão | Inimigo patrulhando; linha de visão contra parede | Câmera e menu (começa após o setup) |
+| **U1** | 09–15/11 | ~~Setup do projeto~~ (feito 09/11); ~~movimento com colisão~~ (feito, PR aberto); mira no mouse (próxima, branch `ailton/mira`) | Inimigo patrulhando; linha de visão contra parede | Câmera e menu (começa após o setup) |
 | **U2** | 16–22/11 | Mira própria; punho, bastão, pegar arma, sangue, morte; sala 1.1 na `Main` | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
 | **U3** | 23–29/11 | Playtest 1; salas 2.1 e 2.2; textos | Música e sons; `CREDITS.md`; ajustes pós-playtest | HUD, pausa, vinheta, telas de texto, tela de fim → **congelamento em 29/11** |
 | **U4** | 30/11–06/12 | Ensaio da apresentação | Correção de erros | Build Windows testado em outro computador → **versão final 04/12**; 05–06 ensaio → **apresentação 07/12** |
@@ -386,6 +403,18 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 ---
 
 ## 19. Pendências
+
+**Pauta da 1ª reunião (qua 11/11):**
+- Arthur e Lipe com o projeto aberto (Unity 6000.5.9f1, Console sem erro).
+- Merge do PR do movimento, depois da revisão do Arthur.
+- Pasta `Assets/Physics` com o Ailton como dono (entra no `AGENTS.md`).
+- Rigidbody do inimigo: proposta Kinematic, para jogador e inimigo não se empurrarem.
+- Explicação do PR: o dono escreve, ou o agente rascunha e o dono confere (decidir para os três).
+
+**Próxima tarefa do Ailton:** mira no mouse (o personagem gira para o cursor), branch `ailton/mira` a partir de `ailton/movimento`. Montar o prompt no chat.
+
+**Notion:** a página do BACKSEAT ainda está com o estado de 09/11 (setup atribuído ao Arthur). Atualização proposta e ainda não confirmada: próximo passo = Arthur e Lipe abrem o projeto até 11/11, merge do movimento e mira; equipe com o setup no Ailton e o Fernando na apresentação.
+
 
 - Nota do GDD (aguardando).
 - Avisar o professor da troca de engine.
