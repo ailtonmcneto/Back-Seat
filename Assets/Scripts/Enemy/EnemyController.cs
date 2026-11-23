@@ -1,0 +1,172 @@
+using UnityEngine;
+
+// Controla o inimigo: patrulha entre pontos fixos e morre com um golpe.
+// Implementa IHittable (do Contracts.cs), então o ataque do jogador consegue acertá-lo
+// sem conhecer esta classe.
+[RequireComponent(typeof(Rigidbody2D))]
+public class EnemyController : MonoBehaviour, IHittable
+{
+    // Estados possíveis do inimigo. Por enquanto só dois; o alerta entra numa próxima tarefa.
+    private enum EnemyState
+    {
+        Patrol,
+        Dead
+    }
+
+    // Pontos da patrulha, na ordem em que o inimigo passa por eles (volta ao primeiro no fim).
+    // São objetos vazios colocados na sala.
+    [SerializeField] private Transform[] patrolPoints;
+
+    // Velocidade em unidades por segundo (1 unidade = 1 tile). Valor provisório, mais lento que o jogador (6).
+    [SerializeField] private float moveSpeed = 3f;
+
+    // A esta distância (em unidades) do ponto, consideramos que o inimigo chegou nele
+    [SerializeField] private float arrivalDistance = 0.05f;
+
+    // Filho do inimigo onde fica o desenho. Gira para olhar na direção em que anda.
+    // Pode ficar vazio: nesse caso o inimigo anda sem girar o desenho.
+    [SerializeField] private Transform visual;
+
+    // Direção para onde o inimigo está olhando (tamanho 1). A visão vai usar isso depois.
+    public Vector2 FacingDirection { get; private set; } = Vector2.right;
+
+    private Rigidbody2D rb;
+    private EnemyState state = EnemyState.Patrol;
+
+    // Posições dos pontos guardadas no início. Assim, mesmo que alguém coloque os pontos
+    // como filhos do inimigo, eles não andam junto com ele.
+    private Vector2[] patrolPositions;
+
+    // Índice do ponto para onde o inimigo está indo agora
+    private int currentPointIndex;
+
+    private void Awake()
+    {
+        // Guarda a referência ao Rigidbody2D uma vez só
+        rb = GetComponent<Rigidbody2D>();
+
+        // Copia a posição de cada ponto para a lista de posições
+        if (patrolPoints == null)
+        {
+            patrolPositions = new Vector2[0];
+            return;
+        }
+
+        patrolPositions = new Vector2[patrolPoints.Length];
+        for (int i = 0; i < patrolPoints.Length; i++)
+        {
+            if (patrolPoints[i] == null)
+            {
+                Debug.LogError("EnemyController: o ponto de patrulha " + i + " está vazio no Inspector.", this);
+                patrolPositions = new Vector2[0];
+                return;
+            }
+
+            patrolPositions[i] = patrolPoints[i].position;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        // Movimento acontece em FixedUpdate, no mesmo ritmo da física
+        if (state == EnemyState.Patrol)
+        {
+            Patrol();
+        }
+    }
+
+    // Anda em linha reta até o ponto atual; ao chegar, passa para o próximo
+    private void Patrol()
+    {
+        // Sem pontos (ou com um só), o inimigo fica parado no lugar
+        if (patrolPositions.Length < 2)
+        {
+            return;
+        }
+
+        Vector2 currentPosition = rb.position;
+        Vector2 target = patrolPositions[currentPointIndex];
+
+        // Chegou no ponto: escolhe o próximo. O "%" faz voltar ao 0 depois do último.
+        if (Vector2.Distance(currentPosition, target) <= arrivalDistance)
+        {
+            currentPointIndex = (currentPointIndex + 1) % patrolPositions.Length;
+            return;
+        }
+
+        // Anda um passo em direção ao ponto, sem passar dele.
+        // MovePosition é o jeito certo de mover um Rigidbody2D Kinematic.
+        Vector2 nextPosition = Vector2.MoveTowards(currentPosition, target, moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(nextPosition);
+
+        // Olha para onde está andando
+        Face(target - currentPosition);
+    }
+
+    // Gira o desenho para a direção informada (0 graus = direita, como no jogador)
+    private void Face(Vector2 direction)
+    {
+        if (direction == Vector2.zero)
+        {
+            return;
+        }
+
+        FacingDirection = direction.normalized;
+
+        if (visual != null)
+        {
+            float angle = Mathf.Atan2(FacingDirection.y, FacingDirection.x) * Mathf.Rad2Deg;
+            visual.rotation = Quaternion.Euler(0f, 0f, angle);
+        }
+    }
+
+    // Chamado por quem ataca (o jogador). Um golpe mata.
+    // "from" é a posição de quem atacou; ainda não usamos (o sangue é do Ailton).
+    public void ReceiveHit(Vector2 from)
+    {
+        // Já está morto: ignora, para não avisar a morte duas vezes
+        if (state == EnemyState.Dead)
+        {
+            return;
+        }
+
+        Die();
+    }
+
+    private void Die()
+    {
+        state = EnemyState.Dead;
+
+        // Para de se mexer
+        rb.linearVelocity = Vector2.zero;
+
+        // Desliga os colisores: o corpo fica na sala, mas não bloqueia o jogador
+        // e não pode ser acertado de novo
+        foreach (Collider2D enemyCollider in GetComponentsInChildren<Collider2D>())
+        {
+            enemyCollider.enabled = false;
+        }
+
+        // Avisa as outras partes do jogo (o Arthur conta os inimigos vivos da sala)
+        GameEvents.RaiseEnemyDied(gameObject);
+    }
+
+    // Desenho de ajuda na janela Scene: linhas ligando os pontos da patrulha. Não aparece no jogo.
+    private void OnDrawGizmosSelected()
+    {
+        if (patrolPoints == null || patrolPoints.Length < 2)
+        {
+            return;
+        }
+
+        for (int i = 0; i < patrolPoints.Length; i++)
+        {
+            Transform from = patrolPoints[i];
+            Transform to = patrolPoints[(i + 1) % patrolPoints.Length];
+            if (from != null && to != null)
+            {
+                Gizmos.DrawLine(from.position, to.position);
+            }
+        }
+    }
+}
