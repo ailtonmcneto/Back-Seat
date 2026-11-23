@@ -45,6 +45,7 @@ Toda comunicação entre jogador, inimigo e jogo passa pelo `Contracts.cs`:
 - **`GameEvents`**: avisos entre as partes (`PlayerDied`, `EnemyDied`, `RoomCleared`, `PlayerReachedCar`). Quem avisa chama `Raise...`. Quem escuta se inscreve em `OnEnable` e se desinscreve em `OnDisable`, sempre.
 - **`Names`**: use as constantes para tags e camadas. Nunca escreva `"Player"` ou `"Walls"` soltos no código.
 - **Jogador morto:** o `PlayerDeath` deixa o corpo na cena, ainda com a tag `Player`, sem física (`simulated = false`), e chama `RaisePlayerDied`. Ele **não revive**. Quem procura o jogador pela tag (o inimigo) deve parar de agir ao receber `PlayerDied`. Quem faz o respawn deve **recarregar a sala ou criar um Player novo a partir do prefab**, nunca reaproveitar o mesmo objeto.
+- **Armas no chão e a física:** o pickup é um colisor *trigger* na camada `Weapon` (`Names.WeaponLayer`), e o `PlayerPickup` o encontra com `OverlapCircleAll`. Isso só funciona com **"Queries Hit Triggers" ligado** em Project Settings > Physics 2D e com a camada `Weapon` existindo com esse nome exato. Se algum dos dois faltar, o E não pega nada e **não aparece erro no Console**. Não desligue essa opção, nem renomeie a camada, sem avisar os três.
 
 Para testar sem a parte do colega, use uma peça falsa na sua cena de teste, nunca código do colega pela metade.
 
