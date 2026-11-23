@@ -92,7 +92,7 @@ Controles: WASD mover, mouse mirar, botão esquerdo atacar, E pegar, R reiniciar
 - Branch por tarefa: `<nome>/<tarefa>`, ex.: `ailton/movimento`, `lipe/patrulha`.
 - Commits pequenos, mensagem em português no imperativo: "Adiciona mira no mouse".
 - **O agente não faz merge na `main`, não faz `push --force` e não apaga branch.**
-- Todo PR usa o modelo `.github/pull_request_template.md`. O agente pode rascunhar a descrição; o dono revisa e completa a parte "Explicação".
+- Todo PR usa o modelo `.github/pull_request_template.md`. O agente rascunha a descrição completa; o dono revisa e confere antes de abrir o PR.
 - Revisão cruzada: Ailton revisa Lipe, Lipe revisa Arthur, Arthur revisa Ailton. O dono do PR faz o merge e resolve os próprios conflitos.
 - Depois de 04/12, nada entra na `main`.
 

@@ -35,10 +35,6 @@
 
 -
 
-## Explicação (com as suas palavras)
-
-<!-- Obrigatório e escrito pelo dono, não pelo agente. Como funciona e por que foi feito assim, como você explicaria na apresentação. 3 a 6 linhas. -->
-
 ## Checklist
 
 - [ ] Abre sem erro no Console do Unity

@@ -323,7 +323,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
    - Cena `Main`: só o Ailton salva. Cenas de teste: `Test_Ailton`, `Test_Lipe`, `Test_Arthur`.
    - `ProjectSettings` (tags, camadas, input, versão): só o Ailton.
    - `Assets/Physics/` (materiais de física, como o `PlayerNoFriction`): Ailton. Proposta a confirmar na reunião e a incluir no `AGENTS.md`.
-4. **PRs documentados** com `.github/pull_request_template.md`: o que mudou, contratos usados, como testar, passos no editor depois do merge e **explicação escrita pelo dono**.
+4. **PRs documentados** com `.github/pull_request_template.md`: o que mudou, contratos usados, como testar e passos no editor depois do merge.
 5. **Reunião semanal: segunda, 19h30–20h30, em chamada.** Sai das 3h de cada um. **A primeira é na quarta, 11/11.**
    - ~10 min: o que cada um terminou e onde travou
    - ~25 min: merge dos PRs **já revisados antes**; conflito o dono resolve na hora
@@ -339,7 +339,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
 4. O dono abre o Unity, espera compilar e faz commit do `.meta` **antes** de qualquer cena usar o script.
 5. O dono faz os passos no editor na cena de teste, confere cada objeto contra a lista e testa em Play Mode. No Unity a prova é o teste jogando, não testes automáticos.
 6. O retorno do agente vem para o chat; a revisão começa pelas decisões que ele tomou sozinho.
-7. O dono salva a cena (Ctrl+S), faz commit e abre o PR pelo site. A explicação do PR é escrita ou revisada pelo dono e conferida no chat.
+7. O dono salva a cena (Ctrl+S), faz commit e abre o PR pelo site. A descrição do PR é rascunhada pelo agente e conferida pelo dono no chat.
 8. Cuidado de Git: criar a branch a partir da `main` atualizada (`git pull` antes). A próxima tarefa pode sair da branch anterior se ela ainda não tiver merge.
 
 **Peças falsas para trabalhar em paralelo:** Ailton testa com um quadrado que implementa `IHittable` e some; Lipe testa com um quadrado de tag `Player` arrastado na cena; Arthur testa com teclas de depuração (K chama `RaisePlayerDied`, L chama `RaiseEnemyDied`).
@@ -392,7 +392,7 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 |---|---|
 | Integrante some | Revisão cruzada garante que cada frente tem uma segunda pessoa que conhece o código |
 | Conflito de Git em cena ou prefab | Donos fixos; só o Ailton salva a `Main` |
-| Código cresce além do que a equipe entende | Explicação obrigatória no PR; congelar funções novas e revisar |
+| Código cresce além do que a equipe entende | Código simples; o agente explica para o dono no chat; congelar funções novas e revisar |
 | Inimigo em linha reta trava em parede | Aceito no MVP; level design evita becos entre inimigo e jogador |
 | Build não roda fora | Testar na U4; plano B: apresentar no notebook da equipe |
 
@@ -409,7 +409,7 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 - Merge do PR do movimento, depois da revisão do Arthur.
 - Pasta `Assets/Physics` com o Ailton como dono (entra no `AGENTS.md`).
 - Rigidbody do inimigo: proposta Kinematic, para jogador e inimigo não se empurrarem.
-- Explicação do PR: o dono escreve, ou o agente rascunha e o dono confere (decidir para os três).
+
 
 **Próxima tarefa do Ailton:** mira no mouse (o personagem gira para o cursor), branch `ailton/mira` a partir de `ailton/movimento`. Montar o prompt no chat.
 
