@@ -119,7 +119,7 @@ Desenho original do GDD, só se sobrar tempo: 4 fases (bar → docas → cassino
 - **Morte:** um acerto mata. O corpo (arte de morto) fica no chão e o jogo chama a tela de morte (Arthur); o jogador aperta R para reiniciar. Dois golpes no mesmo quadro contam como uma morte só.
   Implementado (`PlayerDeath`): desliga movimento, mira e ataque, zera a velocidade, tira o corpo da física (`simulated = false`), troca o desenho vivo pelo morto (`DeadVisual`, filho direto do Player) e chama `RaisePlayerDied` uma vez. O jogador morto continua na cena com a tag `Player` e não revive: o respawn precisa recarregar a sala ou criar um Player novo a partir do prefab.
 - **Respawn:** no início da sala atual, com a arma que tinha ao chegar nela.
-- **Pegar arma:** tecla E, a até 1 tile.
+- **Pegar arma (implementado, `PlayerPickup` + `WeaponPickup`):** E a até 1 tile pega a arma mais perto; ela some do chão e o `PlayerAttack` passa a usar alcance, arco e intervalo dela (`EquipWeapon`). Só pega com o jogador no punho. Bastão provisório: 1,5 tile, 90°, 0,25 s. O jogador morto não pega (o `PlayerDeath` desliga o `PlayerPickup`). **Pendente:** o respawn volta ao punho; a regra "renasce com a arma que tinha" precisa de acordo com o Arthur (GameManager), talvez com mudança no `Contracts.cs`.
 - **Punho sempre disponível.**
 - **Área de acerto do jogador:** 10×10 px dentro do sprite de 16×16.
 
@@ -411,8 +411,8 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 **Próximas tarefas do Ailton, uma por sessão, nesta ordem:**
 1. ~~Ataque com punho~~ (feito, PR #5)
 2. ~~Morte do jogador~~ (feito, PR #6)
-3. **Arma no chão e pegar com E (bastão)** (próxima)
-4. Prefab do Player
+3. ~~Arma no chão e pegar com E (bastão)~~ (feita, PR#7)
+4. ****Prefab do Player** (proxima)
 5. Sala 1.1 na `Main`
 6. Sangue
 

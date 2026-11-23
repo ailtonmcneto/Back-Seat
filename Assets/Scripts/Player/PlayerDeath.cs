@@ -22,10 +22,11 @@ public class PlayerDeath : MonoBehaviour, IHittable
     // Corpo físico do jogador (o RequireComponent garante que existe)
     private Rigidbody2D rb;
 
-    // Os três scripts que fazem o jogador agir. Podem não existir (por exemplo, numa cena de teste).
+    // Os scripts que fazem o jogador agir. Podem não existir (por exemplo, numa cena de teste).
     private PlayerMovement playerMovement;
     private PlayerAim playerAim;
     private PlayerAttack playerAttack;
+    private PlayerPickup playerPickup;
 
     private void Awake()
     {
@@ -34,6 +35,7 @@ public class PlayerDeath : MonoBehaviour, IHittable
         playerMovement = GetComponent<PlayerMovement>();
         playerAim = GetComponent<PlayerAim>();
         playerAttack = GetComponent<PlayerAttack>();
+        playerPickup = GetComponent<PlayerPickup>();
     }
 
     // Chamado por quem ataca (inimigo ou peça de teste), que só conhece a interface IHittable.
@@ -62,6 +64,10 @@ public class PlayerDeath : MonoBehaviour, IHittable
         if (playerAttack != null)
         {
             playerAttack.enabled = false;
+        }
+        if (playerPickup != null)
+        {
+            playerPickup.enabled = false;
         }
 
         // d. Para o corpo na hora e tira ele da física:
