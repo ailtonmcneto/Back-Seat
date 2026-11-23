@@ -1,7 +1,7 @@
 # Contexto — BACKSEAT (Projeto Extensionista)
 
 > Anexe este arquivo no início de uma nova conversa para retomar o projeto de onde paramos.
-> Última atualização: 10/11/2026 — **Unity + C#. Setup feito e movimento do jogador pronto (PR aberto). Foco total no MVP (seção 3).**
+> Última atualização: 23/11/2026 — **Unity + C#. Na main: setup, movimento, mira, README e ataque com punho. Câmera do Arthur no PR #4 (rascunho). Inimigo do Lipe em andamento, sem push ainda. Foco total no MVP (seção 3).**
 >
 > **Como ler este arquivo:** toda seção separa **MVP** (o que será feito até 04/12) de **Pós-MVP** (desenho do GDD que só entra se sobrar tempo depois do MVP pronto). Na dúvida, vale o MVP.
 
@@ -14,12 +14,14 @@
 - **Entrega:** jogo do **Projeto Extensionista**. **Apresentação em 07/12/2026. Versão final gravada em 04/12.**
 - **GDD:** entregue e avaliado pelo professor; aguardando nota. O GDD avaliado cita LibGDX; a troca de engine precisa ser avisada ao professor.
 - **Experiência:** nenhuma com jogos, Unity ou C#.
-- **Tempo:** 3h/semana por pessoa (~30h de equipe até 04/12). O estudo de Java (Portão 0) continua fora deste projeto.
-- **Estado em 10/11:**
+- **Tempo:** o teto de 3h/semana por pessoa caiu em 16/11; o Ailton trabalha mais que isso, sem número fixo. O estudo de Java (Portão 0) continua fora deste projeto.
+- **Estado em 23/11:**
   - **Setup do projeto concluído (Ailton, 09/11):** Unity **6000.5.9f1**, 2D URP, `.gitignore` do Unity, tag `Enemy`, camadas `Walls` (6) e `Weapon` (7), cenas `Main`, `Test_Ailton`, `Test_Arthur`, `Test_Lipe`, pastas `Scripts/{Contracts,Player,Enemy,Game,UI}` com `README.md`, `Contracts.cs`, `AGENTS.md`, `CLAUDE.md`, modelo de PR e `docs/contexto-jogo.md` na `main`.
-  - **Movimento do jogador pronto e testado:** `PlayerMovement.cs` na branch `ailton/movimento`, PR aberto para a `main` com o Arthur como revisor. Merge previsto na reunião de quarta (11/11).
-  - Arthur e Lipe ainda precisam clonar e abrir o projeto (gatilho de 11/11).
-  - Cinemachine e TextMeshPro ainda não instalados (o Arthur instala na câmera e nas telas).
+  - **Na `main` (Ailton):** movimento (PR #1, 09/11), mira no mouse (PR #2, 11/11), README (PR #3, 11/11) e **ataque com punho (PR #5, 23/11)**, com o `TestDummy` (peça falsa) em `Scripts/Player/TestOnly/`. Próxima tarefa: morte do jogador (seção 19).
+  - **Câmera (Arthur):** PR #4 aberto como rascunho; Cinemachine 3.1.7 instalado nessa branch. A cena de teste ainda precisa de ajuste (campo Game Camera vazio, Z do alvo) e de teste em Play Mode.
+  - **Inimigo (Lipe):** em 23/11 ele informou que está terminando a patrulha e que termina a linha de visão no mesmo dia. Ainda sem push no GitHub.
+  - **Marco A (22/11)** passou sem o inimigo na `main`. Pela regra de corte (seção 17), a fase 2 sai; falta formalizar com a equipe.
+  - Cinemachine e TextMeshPro: o Cinemachine já está na branch da câmera; o TextMeshPro o Arthur instala nas telas.
 
 ---
 
@@ -113,8 +115,8 @@ Desenho original do GDD, só se sobrar tempo: 4 fases (bar → docas → cassino
 ### MVP
 - **Movimento:** 8 direções, velocidade constante (~6 tiles/s, provisório), sem aceleração. Sem dash.
 - **Mira:** o personagem olha para o mouse. Mover e mirar são independentes.
-- **Ataque:** botão esquerdo. Golpe em arco curto à frente, com intervalo mínimo entre ataques.
-- **Morte:** um acerto mata. Tela de morte; o jogador aperta R para reiniciar.
+- **Ataque:** botão esquerdo. Golpe em arco curto à frente, com intervalo mínimo entre ataques. Implementado (`PlayerAttack`): um golpe por clique, instantâneo; punho com alcance 1 tile, arco de 90° e intervalo de 0,5 s (valores provisórios, ajustáveis no Inspector); acerta todos os alvos com `IHittable` no arco; parede bloqueia.
+- **Morte:** um acerto mata. O corpo (arte de morto) fica no chão e o jogo chama a tela de morte (Arthur); o jogador aperta R para reiniciar. Dois golpes no mesmo quadro contam como uma morte só.
 - **Respawn:** no início da sala atual, com a arma que tinha ao chegar nela.
 - **Pegar arma:** tecla E, a até 1 tile.
 - **Punho sempre disponível.**
@@ -324,7 +326,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
    - `ProjectSettings` (tags, camadas, input, versão): só o Ailton.
    - `Assets/Physics/` (materiais de física, como o `PlayerNoFriction`): Ailton. Proposta a confirmar na reunião e a incluir no `AGENTS.md`.
 4. **PRs documentados** com `.github/pull_request_template.md`: o que mudou, contratos usados, como testar e passos no editor depois do merge.
-5. **Reunião semanal: segunda, 19h30–20h30, em chamada.** Sai das 3h de cada um. **A primeira é na quarta, 11/11.**
+5. **Reunião semanal: segunda, 19h30–20h30, em chamada.** **A primeira era na quarta, 11/11; as de 11/11 e 16/11 não aconteceram.**
    - ~10 min: o que cada um terminou e onde travou
    - ~25 min: merge dos PRs **já revisados antes**; conflito o dono resolve na hora
    - ~15 min: Ailton monta a `Main` com os "Passos no editor" e os três jogam
@@ -352,8 +354,8 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
 
 | Semana | Período | Ailton | Lipe | Arthur |
 |---|---|---|---|---|
-| **U1** | 09–15/11 | ~~Setup do projeto~~ (feito 09/11); ~~movimento com colisão~~ (feito, PR aberto); mira no mouse (próxima, branch `ailton/mira`) | Inimigo patrulhando; linha de visão contra parede | Câmera e menu (começa após o setup) |
-| **U2** | 16–22/11 | Mira própria; punho, bastão, pegar arma, sangue, morte; sala 1.1 na `Main` | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
+| **U1** | 09–15/11 | ~~Setup do projeto~~ (feito 09/11); ~~movimento com colisão~~ (feito, PR #1); ~~mira no mouse~~ (feito, PR #2) | Inimigo patrulhando; linha de visão contra parede | Câmera e menu (começa após o setup) |
+| **U2** | 16–22/11 | ~~Punho~~ (feito, PR #5, 23/11); morte, pegar arma e bastão, prefab do Player, sala 1.1 na `Main`, sangue; mira própria | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
 | **U3** | 23–29/11 | Playtest 1; salas 2.1 e 2.2; textos | Música e sons; `CREDITS.md`; ajustes pós-playtest | HUD, pausa, vinheta, telas de texto, tela de fim → **congelamento em 29/11** |
 | **U4** | 30/11–06/12 | Ensaio da apresentação | Correção de erros | Build Windows testado em outro computador → **versão final 04/12**; 05–06 ensaio → **apresentação 07/12** |
 
@@ -404,17 +406,21 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 
 ## 19. Pendências
 
-**Pauta da 1ª reunião (qua 11/11):**
-- Arthur e Lipe com o projeto aberto (Unity 6000.5.9f1, Console sem erro).
-- Merge do PR do movimento, depois da revisão do Arthur.
+**Próximas tarefas do Ailton, uma por sessão, nesta ordem:**
+1. ~~Ataque com punho~~ (feito, PR #5)
+2. **Morte do jogador** (próxima): `IHittable` no jogador; o corpo fica no chão e chama a tela de morte do Arthur (`RaisePlayerDied`); evitar morte dupla.
+3. Arma no chão e pegar com E (bastão)
+4. Prefab do Player
+5. Sala 1.1 na `Main`
+6. Sangue
+
+**Pauta aberta da equipe:**
+- Formalizar que a fase 2 saiu (gatilho de 15/11 e Marco A não cumpridos).
+- Câmera do Arthur: corrigir a cena (Game Camera, Z do alvo), testar e marcar o PR #4 como pronto para revisão; depois, trava na borda da sala.
+- Inimigo do Lipe: patrulha e linha de visão previstas para 23/11; depois detecção, interrogação, alerta, esquecimento, ataque e morte. O ataque dele só mata o jogador depois da tarefa 2 do Ailton.
 - Pasta `Assets/Physics` com o Ailton como dono (entra no `AGENTS.md`).
 - Rigidbody do inimigo: proposta Kinematic, para jogador e inimigo não se empurrarem.
-
-
-**Próxima tarefa do Ailton:** mira no mouse (o personagem gira para o cursor), branch `ailton/mira` a partir de `ailton/movimento`. Montar o prompt no chat.
-
-**Notion:** a página do BACKSEAT ainda está com o estado de 09/11 (setup atribuído ao Arthur). Atualização proposta e ainda não confirmada: próximo passo = Arthur e Lipe abrem o projeto até 11/11, merge do movimento e mira; equipe com o setup no Ailton e o Fernando na apresentação.
-
+- O colisor do inimigo precisa ser não trigger e fora da camada `Walls` (o ataque do jogador ignora triggers).
 
 - Nota do GDD (aguardando).
 - Avisar o professor da troca de engine.
