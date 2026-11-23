@@ -9,16 +9,20 @@ using UnityEngine.InputSystem;
 public class PlayerAttack : MonoBehaviour
 {
     // Alcance do golpe em unidades (1 unidade = 1 tile), medido do centro do jogador.
-    // Valor provisório do punho.
+    // O valor inicial é o do punho (provisório). Ao pegar uma arma, EquipWeapon troca este valor.
     [SerializeField] private float attackRange = 1f;
 
     // Abertura total do arco em graus: metade para cada lado da mira.
-    // Valor provisório do punho.
+    // O valor inicial é o do punho (provisório). Ao pegar uma arma, EquipWeapon troca este valor.
     [SerializeField] private float attackAngle = 90f;
 
     // Tempo mínimo em segundos entre um golpe e o próximo.
-    // Valor provisório do punho.
+    // O valor inicial é o do punho (provisório). Ao pegar uma arma, EquipWeapon troca este valor.
     [SerializeField] private float attackCooldown = 0.5f;
+
+    // Verdadeiro quando o jogador pegou uma arma do chão (falso = punho).
+    // Qualquer script pode ler; só este script pode mudar (private set).
+    public bool HasWeapon { get; private set; } = false;
 
     // Componente da mira, de onde vem a direção do golpe
     private PlayerAim playerAim;
@@ -66,6 +70,16 @@ public class PlayerAttack : MonoBehaviour
         nextAttackTime = Time.time + attackCooldown;
 
         Attack();
+    }
+
+    // Chamado quando o jogador pega uma arma do chão (pelo PlayerPickup).
+    // A partir daqui, o golpe usa o alcance, o arco e o intervalo da arma no lugar dos do punho.
+    public void EquipWeapon(float newRange, float newAngle, float newCooldown)
+    {
+        attackRange = newRange;
+        attackAngle = newAngle;
+        attackCooldown = newCooldown;
+        HasWeapon = true;
     }
 
     // Dá um golpe: acontece inteiro neste frame, sem duração
