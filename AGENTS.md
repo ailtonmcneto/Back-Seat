@@ -44,6 +44,7 @@ Toda comunicação entre jogador, inimigo e jogo passa pelo `Contracts.cs`:
 - **`IHittable.ReceiveHit(Vector2 from)`**: quem ataca procura `IHittable` no que acertou e chama. Nunca referencie diretamente a classe do jogador ou do inimigo de fora da pasta dela.
 - **`GameEvents`**: avisos entre as partes (`PlayerDied`, `EnemyDied`, `RoomCleared`, `PlayerReachedCar`). Quem avisa chama `Raise...`. Quem escuta se inscreve em `OnEnable` e se desinscreve em `OnDisable`, sempre.
 - **`Names`**: use as constantes para tags e camadas. Nunca escreva `"Player"` ou `"Walls"` soltos no código.
+- **Jogador morto:** o `PlayerDeath` deixa o corpo na cena, ainda com a tag `Player`, sem física (`simulated = false`), e chama `RaisePlayerDied`. Ele **não revive**. Quem procura o jogador pela tag (o inimigo) deve parar de agir ao receber `PlayerDied`. Quem faz o respawn deve **recarregar a sala ou criar um Player novo a partir do prefab**, nunca reaproveitar o mesmo objeto.
 
 Para testar sem a parte do colega, use uma peça falsa na sua cena de teste, nunca código do colega pela metade.
 

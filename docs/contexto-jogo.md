@@ -1,7 +1,7 @@
 # Contexto — BACKSEAT (Projeto Extensionista)
 
 > Anexe este arquivo no início de uma nova conversa para retomar o projeto de onde paramos.
-> Última atualização: 23/11/2026 — **Unity + C#. Na main: setup, movimento, mira, README e ataque com punho. Câmera do Arthur no PR #4 (rascunho). Inimigo do Lipe em andamento, sem push ainda. Foco total no MVP (seção 3).**
+> Última atualização: 23/11/2026 — **Unity + C#. Na main: setup, movimento, mira, README, ataque com punho e morte do jogador. Câmera do Arthur no PR #4 (rascunho). Inimigo do Lipe em andamento, sem push ainda. Foco total no MVP (seção 3).**
 >
 > **Como ler este arquivo:** toda seção separa **MVP** (o que será feito até 04/12) de **Pós-MVP** (desenho do GDD que só entra se sobrar tempo depois do MVP pronto). Na dúvida, vale o MVP.
 
@@ -17,7 +17,7 @@
 - **Tempo:** o teto de 3h/semana por pessoa caiu em 16/11; o Ailton trabalha mais que isso, sem número fixo. O estudo de Java (Portão 0) continua fora deste projeto.
 - **Estado em 23/11:**
   - **Setup do projeto concluído (Ailton, 09/11):** Unity **6000.5.9f1**, 2D URP, `.gitignore` do Unity, tag `Enemy`, camadas `Walls` (6) e `Weapon` (7), cenas `Main`, `Test_Ailton`, `Test_Arthur`, `Test_Lipe`, pastas `Scripts/{Contracts,Player,Enemy,Game,UI}` com `README.md`, `Contracts.cs`, `AGENTS.md`, `CLAUDE.md`, modelo de PR e `docs/contexto-jogo.md` na `main`.
-  - **Na `main` (Ailton):** movimento (PR #1, 09/11), mira no mouse (PR #2, 11/11), README (PR #3, 11/11) e **ataque com punho (PR #5, 23/11)**, com o `TestDummy` (peça falsa) em `Scripts/Player/TestOnly/`. Próxima tarefa: morte do jogador (seção 19).
+  - **Na `main` (Ailton):** movimento (PR #1, 09/11), mira no mouse (PR #2, 11/11), README (PR #3, 11/11), **ataque com punho (PR #5, 23/11)** e **morte do jogador (PR #6, 23/11)**, com as peças falsas `TestDummy` e `TestPlayerKiller` em `Scripts/Player/TestOnly/`. Próxima tarefa: arma no chão e pegar com E (seção 19).
   - **Câmera (Arthur):** PR #4 aberto como rascunho; Cinemachine 3.1.7 instalado nessa branch. A cena de teste ainda precisa de ajuste (campo Game Camera vazio, Z do alvo) e de teste em Play Mode.
   - **Inimigo (Lipe):** em 23/11 ele informou que está terminando a patrulha e que termina a linha de visão no mesmo dia. Ainda sem push no GitHub.
   - **Marco A (22/11)** passou sem o inimigo na `main`. Pela regra de corte (seção 17), a fase 2 sai; falta formalizar com a equipe.
@@ -117,6 +117,7 @@ Desenho original do GDD, só se sobrar tempo: 4 fases (bar → docas → cassino
 - **Mira:** o personagem olha para o mouse. Mover e mirar são independentes.
 - **Ataque:** botão esquerdo. Golpe em arco curto à frente, com intervalo mínimo entre ataques. Implementado (`PlayerAttack`): um golpe por clique, instantâneo; punho com alcance 1 tile, arco de 90° e intervalo de 0,5 s (valores provisórios, ajustáveis no Inspector); acerta todos os alvos com `IHittable` no arco; parede bloqueia.
 - **Morte:** um acerto mata. O corpo (arte de morto) fica no chão e o jogo chama a tela de morte (Arthur); o jogador aperta R para reiniciar. Dois golpes no mesmo quadro contam como uma morte só.
+  Implementado (`PlayerDeath`): desliga movimento, mira e ataque, zera a velocidade, tira o corpo da física (`simulated = false`), troca o desenho vivo pelo morto (`DeadVisual`, filho direto do Player) e chama `RaisePlayerDied` uma vez. O jogador morto continua na cena com a tag `Player` e não revive: o respawn precisa recarregar a sala ou criar um Player novo a partir do prefab.
 - **Respawn:** no início da sala atual, com a arma que tinha ao chegar nela.
 - **Pegar arma:** tecla E, a até 1 tile.
 - **Punho sempre disponível.**
@@ -143,6 +144,7 @@ Desenho original do GDD, só se sobrar tempo: 4 fases (bar → docas → cassino
   - Com linha de visão: atualiza o ponto e ataca com o bastão.
   - Sem linha de visão: vai ao ponto e roda o contador de esquecimento.
   - **Só a visão alerta.** Barulho não alerta.
+- **Jogador morto:** ao receber `GameEvents.PlayerDied`, o inimigo para de detectar e atacar. O corpo do jogador continua na cena com a tag `Player`, então sem isso o inimigo continuaria indo até ele.
 - **Linha de visão:** bloqueada por qualquer parede. Alcance máximo **~6,5 tiles**.
 - **Morto:** larga a arma no chão e o corpo fica na sala.
 
@@ -355,7 +357,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
 | Semana | Período | Ailton | Lipe | Arthur |
 |---|---|---|---|---|
 | **U1** | 09–15/11 | ~~Setup do projeto~~ (feito 09/11); ~~movimento com colisão~~ (feito, PR #1); ~~mira no mouse~~ (feito, PR #2) | Inimigo patrulhando; linha de visão contra parede | Câmera e menu (começa após o setup) |
-| **U2** | 16–22/11 | ~~Punho~~ (feito, PR #5, 23/11); morte, pegar arma e bastão, prefab do Player, sala 1.1 na `Main`, sangue; mira própria | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
+| **U2** | 16–22/11 | ~~Punho~~ (feito, PR #5, 23/11); ~~morte~~ (feito, PR #6, 23/11); pegar arma e bastão, prefab do Player, sala 1.1 na `Main`, sangue; mira própria | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
 | **U3** | 23–29/11 | Playtest 1; salas 2.1 e 2.2; textos | Música e sons; `CREDITS.md`; ajustes pós-playtest | HUD, pausa, vinheta, telas de texto, tela de fim → **congelamento em 29/11** |
 | **U4** | 30/11–06/12 | Ensaio da apresentação | Correção de erros | Build Windows testado em outro computador → **versão final 04/12**; 05–06 ensaio → **apresentação 07/12** |
 
@@ -408,8 +410,8 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 
 **Próximas tarefas do Ailton, uma por sessão, nesta ordem:**
 1. ~~Ataque com punho~~ (feito, PR #5)
-2. **Morte do jogador** (próxima): `IHittable` no jogador; o corpo fica no chão e chama a tela de morte do Arthur (`RaisePlayerDied`); evitar morte dupla.
-3. Arma no chão e pegar com E (bastão)
+2. ~~Morte do jogador~~ (feito, PR #6)
+3. **Arma no chão e pegar com E (bastão)** (próxima)
 4. Prefab do Player
 5. Sala 1.1 na `Main`
 6. Sangue
@@ -417,7 +419,8 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 **Pauta aberta da equipe:**
 - Formalizar que a fase 2 saiu (gatilho de 15/11 e Marco A não cumpridos).
 - Câmera do Arthur: corrigir a cena (Game Camera, Z do alvo), testar e marcar o PR #4 como pronto para revisão; depois, trava na borda da sala.
-- Inimigo do Lipe: patrulha e linha de visão previstas para 23/11; depois detecção, interrogação, alerta, esquecimento, ataque e morte. O ataque dele só mata o jogador depois da tarefa 2 do Ailton.
+- Inimigo do Lipe: patrulha e linha de visão previstas para 23/11; depois detecção, interrogação, alerta, esquecimento, ataque e morte. A tarefa 2 do Ailton (morte do jogador) já está na main, então o ataque dele já pode matar o jogador.
+- Combinar com o Lipe que o inimigo escuta `PlayerDied` e para de agir, e com o Arthur que o respawn recarrega a sala (o `PlayerDeath` não revive).
 - Pasta `Assets/Physics` com o Ailton como dono (entra no `AGENTS.md`).
 - Rigidbody do inimigo: proposta Kinematic, para jogador e inimigo não se empurrarem.
 - O colisor do inimigo precisa ser não trigger e fora da camada `Walls` (o ataque do jogador ignora triggers).
