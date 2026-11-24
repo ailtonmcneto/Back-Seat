@@ -66,6 +66,15 @@ public class EnemyController : MonoBehaviour, IHittable
         rb = GetComponent<Rigidbody2D>();
         vision = GetComponent<EnemyVision>();
 
+        // Sem os olhos o inimigo não funciona: avisa uma vez e desliga este componente,
+        // assim o Update nem chega a rodar (em vez de dar erro a cada frame)
+        if (vision == null)
+        {
+            Debug.LogError("EnemyController: falta o componente EnemyVision neste inimigo. Adicione com Add Component.", this);
+            enabled = false;
+            return;
+        }
+
         // Copia a posição de cada ponto para a lista de posições
         if (patrolPoints == null)
         {
