@@ -35,16 +35,20 @@ public class CameraFollowTarget : MonoBehaviour
         Vector2 lookAheadOffset = Vector2.zero;
 
         // Sem câmera, mouse ou foco, continua acompanhando o alvo sem deslocamento.
-        if (gameCamera != null && hasMouseInput && gameCamera.pixelRect.Contains(mouseScreenPosition))
+        if (gameCamera != null && hasMouseInput)
         {
-            // A câmera é ortográfica e sem rotação; o alvo fica no plano XY.
-            float distanceToTarget = target.position.z - gameCamera.transform.position.z;
-            Vector3 mouseWorldPosition = gameCamera.ScreenToWorldPoint(
-                new Vector3(mouseScreenPosition.x, mouseScreenPosition.y, distanceToTarget));
+            // O Pixel Perfect informa a área final da imagem, sem as barras pretas.
+            Rect cameraRect = gameCamera.pixelRect;
+            if (cameraRect.Contains(mouseScreenPosition))
+            {
+                // A altura visível da câmera ortográfica é o dobro do seu tamanho.
+                float unitsPerScreenPixel = 2f * gameCamera.orthographicSize / cameraRect.height;
 
-            // Mede a partir do centro da visão para o movimento da câmera não se acumular.
-            Vector2 offsetFromViewCenter = mouseWorldPosition - gameCamera.transform.position;
-            lookAheadOffset = Vector2.ClampMagnitude(offsetFromViewCenter, lookAheadDistance);
+                // Converte a distância ao centro sem usar a matriz arredondada pelo Pixel Perfect.
+                // A câmera permanece sem rotação; X e Y da tela correspondem aos do mundo.
+                Vector2 offsetFromViewCenter = (mouseScreenPosition - cameraRect.center) * unitsPerScreenPixel;
+                lookAheadOffset = Vector2.ClampMagnitude(offsetFromViewCenter, lookAheadDistance);
+            }
         }
 
         // Desloca só X e Y: preserva o Z do alvo e não copia sua rotação.
