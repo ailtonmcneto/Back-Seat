@@ -1,7 +1,7 @@
 # Contexto — BACKSEAT (Projeto Extensionista)
 
 > Anexe este arquivo no início de uma nova conversa para retomar o projeto de onde paramos.
-> Última atualização: 23/11/2026 — **Unity + C#. Na main: setup, movimento, mira, README, ataque com punho e morte do jogador. Câmera do Arthur no PR #4 (rascunho). Inimigo do Lipe em andamento, sem push ainda. Foco total no MVP (seção 3).**
+> Última atualização: 24/11/2026 — **Unity + C#. Na main: setup, movimento, mira, README, ataque com punho, morte do jogador e arma no chão (bastão). Câmera do Arthur no PR #4 (rascunho). Inimigo do Lipe em andamento, sem push ainda. Foco total no MVP (seção 3).**
 >
 > **Como ler este arquivo:** toda seção separa **MVP** (o que será feito até 04/12) de **Pós-MVP** (desenho do GDD que só entra se sobrar tempo depois do MVP pronto). Na dúvida, vale o MVP.
 
@@ -15,9 +15,9 @@
 - **GDD:** entregue e avaliado pelo professor; aguardando nota. O GDD avaliado cita LibGDX; a troca de engine precisa ser avisada ao professor.
 - **Experiência:** nenhuma com jogos, Unity ou C#.
 - **Tempo:** o teto de 3h/semana por pessoa caiu em 16/11; o Ailton trabalha mais que isso, sem número fixo. O estudo de Java (Portão 0) continua fora deste projeto.
-- **Estado em 23/11:**
+- **Estado em 24/11:**
   - **Setup do projeto concluído (Ailton, 09/11):** Unity **6000.5.9f1**, 2D URP, `.gitignore` do Unity, tag `Enemy`, camadas `Walls` (6) e `Weapon` (7), cenas `Main`, `Test_Ailton`, `Test_Arthur`, `Test_Lipe`, pastas `Scripts/{Contracts,Player,Enemy,Game,UI}` com `README.md`, `Contracts.cs`, `AGENTS.md`, `CLAUDE.md`, modelo de PR e `docs/contexto-jogo.md` na `main`.
-  - **Na `main` (Ailton):** movimento (PR #1, 09/11), mira no mouse (PR #2, 11/11), README (PR #3, 11/11), **ataque com punho (PR #5, 23/11)** e **morte do jogador (PR #6, 23/11)**, com as peças falsas `TestDummy` e `TestPlayerKiller` em `Scripts/Player/TestOnly/`. Próxima tarefa: arma no chão e pegar com E (seção 19).
+  - **Na `main` (Ailton):** movimento (PR #1, 09/11), mira no mouse (PR #2, 11/11), README (PR #3, 11/11), **ataque com punho (PR #5, 23/11)**, **morte do jogador (PR #6, 23/11)** e **arma no chão com bastão, pegando com E (PR #7, 24/11)**, com as peças falsas `TestDummy` e `TestPlayerKiller` em `Scripts/Player/TestOnly/`. Próxima tarefa: prefab do Player (seção 19).
   - **Câmera (Arthur):** PR #4 aberto como rascunho; Cinemachine 3.1.7 instalado nessa branch. A cena de teste ainda precisa de ajuste (campo Game Camera vazio, Z do alvo) e de teste em Play Mode.
   - **Inimigo (Lipe):** em 23/11 ele informou que está terminando a patrulha e que termina a linha de visão no mesmo dia. Ainda sem push no GitHub.
   - **Marco A (22/11)** passou sem o inimigo na `main`. Pela regra de corte (seção 17), a fase 2 sai; falta formalizar com a equipe.
@@ -357,7 +357,7 @@ Regras das armas de fogo (pós-MVP): um pente só, sem recarga; bala para no pri
 | Semana | Período | Ailton | Lipe | Arthur |
 |---|---|---|---|---|
 | **U1** | 09–15/11 | ~~Setup do projeto~~ (feito 09/11); ~~movimento com colisão~~ (feito, PR #1); ~~mira no mouse~~ (feito, PR #2) | Inimigo patrulhando; linha de visão contra parede | Câmera e menu (começa após o setup) |
-| **U2** | 16–22/11 | ~~Punho~~ (feito, PR #5, 23/11); ~~morte~~ (feito, PR #6, 23/11); pegar arma e bastão, prefab do Player, sala 1.1 na `Main`, sangue; mira própria | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
+| **U2** | 16–22/11 | ~~Punho~~ (feito, PR #5, 23/11); ~~morte~~ (feito, PR #6, 23/11); ~~pegar arma e bastão~~ (feito, PR #7, 24/11); prefab do Player, sala 1.1 na `Main`, sangue; mira própria | Interrogação, alerta, esquecimento, ataque, morte e corpo | Saída bloqueada, respawn, carro, tela de morte, aviso e seta → **Marco A em 22/11** |
 | **U3** | 23–29/11 | Playtest 1; salas 2.1 e 2.2; textos | Música e sons; `CREDITS.md`; ajustes pós-playtest | HUD, pausa, vinheta, telas de texto, tela de fim → **congelamento em 29/11** |
 | **U4** | 30/11–06/12 | Ensaio da apresentação | Correção de erros | Build Windows testado em outro computador → **versão final 04/12**; 05–06 ensaio → **apresentação 07/12** |
 
@@ -411,8 +411,8 @@ Se a primeira falhar, corrigir a interrogação (tamanho, contraste, velocidade)
 **Próximas tarefas do Ailton, uma por sessão, nesta ordem:**
 1. ~~Ataque com punho~~ (feito, PR #5)
 2. ~~Morte do jogador~~ (feito, PR #6)
-3. ~~Arma no chão e pegar com E (bastão)~~ (feita, PR#7)
-4. ****Prefab do Player** (proxima)
+3. ~~Arma no chão e pegar com E (bastão)~~ (feita, PR #7)
+4. **Prefab do Player** (próxima)
 5. Sala 1.1 na `Main`
 6. Sangue
 
