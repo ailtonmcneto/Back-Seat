@@ -1,15 +1,17 @@
 using UnityEngine;
 
-// Controla o inimigo: patrulha entre pontos fixos e morre com um golpe.
+// Controla o inimigo: patrulha entre pontos fixos, detecta o jogador e morre com um golpe.
 // Implementa IHittable (do Contracts.cs), então o ataque do jogador consegue acertá-lo
 // sem conhecer esta classe.
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(EnemyVision))]
 public class EnemyController : MonoBehaviour, IHittable
 {
-    // Estados possíveis do inimigo. Por enquanto só dois; o alerta entra numa próxima tarefa.
+    // Estados possíveis do inimigo (GDD: patrulha → alerta → morto)
     private enum EnemyState
     {
         Patrol,
+        Alert,
         Dead
     }
 
@@ -27,11 +29,29 @@ public class EnemyController : MonoBehaviour, IHittable
     // Pode ficar vazio: nesse caso o inimigo anda sem girar o desenho.
     [SerializeField] private Transform visual;
 
-    // Direção para onde o inimigo está olhando (tamanho 1). A visão vai usar isso depois.
+    // Segundos vendo o jogador sem parar até identificá-lo. GDD: ~0,8 s.
+    [SerializeField] private float detectionTime = 0.8f;
+
+    // Segundos sem ver o jogador, em alerta, até esquecer e voltar a patrulhar. GDD: ~5 s.
+    [SerializeField] private float forgetTime = 5f;
+
+    // Direção para onde o inimigo está olhando (tamanho 1). A visão usa isso.
     public Vector2 FacingDirection { get; private set; } = Vector2.right;
 
+    // Quanto o contador de detecção já encheu, de 0 (nada) a 1 (identificou).
+    // A interrogação vai usar isso numa próxima tarefa.
+    public float DetectionProgress => detectionTimer / detectionTime;
+
+    // Último lugar onde o inimigo viu o jogador (o alerta vai usar isso na próxima tarefa)
+    public Vector2 LastKnownPlayerPosition { get; private set; }
+
     private Rigidbody2D rb;
+    private EnemyVision vision;
     private EnemyState state = EnemyState.Patrol;
+
+    // Contadores em segundos
+    private float detectionTimer;
+    private float forgetTimer;
 
     // Posições dos pontos guardadas no início. Assim, mesmo que alguém coloque os pontos
     // como filhos do inimigo, eles não andam junto com ele.
@@ -42,8 +62,9 @@ public class EnemyController : MonoBehaviour, IHittable
 
     private void Awake()
     {
-        // Guarda a referência ao Rigidbody2D uma vez só
+        // Guarda as referências uma vez só
         rb = GetComponent<Rigidbody2D>();
+        vision = GetComponent<EnemyVision>();
 
         // Copia a posição de cada ponto para a lista de posições
         if (patrolPoints == null)
@@ -63,6 +84,77 @@ public class EnemyController : MonoBehaviour, IHittable
             }
 
             patrolPositions[i] = patrolPoints[i].position;
+        }
+    }
+
+    private void Update()
+    {
+        // Morto não vê nada
+        if (state == EnemyState.Dead)
+        {
+            return;
+        }
+
+        // Os dois contadores usam a mesma verificação de linha de visão (GDD)
+        bool seesPlayer = vision.CanSeePlayer(FacingDirection);
+
+        if (state == EnemyState.Patrol)
+        {
+            UpdateDetection(seesPlayer);
+        }
+        else if (state == EnemyState.Alert)
+        {
+            UpdateAlert(seesPlayer);
+        }
+    }
+
+    // Patrulhando: o contador de detecção enche enquanto vê o jogador
+    // e esvazia no mesmo ritmo quando deixa de ver
+    private void UpdateDetection(bool seesPlayer)
+    {
+        if (seesPlayer)
+        {
+            detectionTimer += Time.deltaTime;
+        }
+        else
+        {
+            detectionTimer -= Time.deltaTime;
+        }
+
+        // Mantém o contador entre 0 e o tempo de detecção
+        detectionTimer = Mathf.Clamp(detectionTimer, 0f, detectionTime);
+
+        // Encheu: identificou o jogador
+        if (detectionTimer >= detectionTime)
+        {
+            state = EnemyState.Alert;
+            forgetTimer = 0f;
+            LastKnownPlayerPosition = vision.PlayerPosition;
+            Debug.Log(name + " identificou o jogador", this);
+        }
+    }
+
+    // Em alerta: vendo o jogador, guarda onde ele está e olha para ele;
+    // sem ver, o contador de esquecimento enche até voltar a patrulhar
+    private void UpdateAlert(bool seesPlayer)
+    {
+        if (seesPlayer)
+        {
+            LastKnownPlayerPosition = vision.PlayerPosition;
+            forgetTimer = 0f;
+            Face(LastKnownPlayerPosition - rb.position);
+            return;
+        }
+
+        forgetTimer += Time.deltaTime;
+
+        // Encheu: esqueceu o jogador e volta a patrulhar do zero
+        if (forgetTimer >= forgetTime)
+        {
+            state = EnemyState.Patrol;
+            detectionTimer = 0f;
+            forgetTimer = 0f;
+            Debug.Log(name + " esqueceu o jogador e voltou a patrulhar", this);
         }
     }
 
