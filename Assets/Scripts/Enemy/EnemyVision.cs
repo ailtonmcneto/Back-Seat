@@ -11,8 +11,12 @@ public class EnemyVision : MonoBehaviour
     // Fora do cone (pelas costas) o inimigo não vê. Valor provisório.
     [SerializeField] private float viewAngle = 120f;
 
-    // Posição do jogador da última vez que foi procurado (o alerta usa isso depois)
+    // Posição do jogador da última vez que foi procurado (o alerta usa isso)
     public Vector2 PlayerPosition { get; private set; }
+
+    // A parte do jogador que pode ser acertada (o PlayerDeath do Ailton).
+    // Só conhecemos a interface do Contracts.cs, nunca a classe do jogador.
+    public IHittable PlayerHittable { get; private set; }
 
     // Jogador encontrado pela tag
     private Transform player;
@@ -48,6 +52,7 @@ public class EnemyVision : MonoBehaviour
                 return false;
             }
             player = playerObject.transform;
+            PlayerHittable = playerObject.GetComponent<IHittable>();
         }
 
         Vector2 eyes = transform.position;
