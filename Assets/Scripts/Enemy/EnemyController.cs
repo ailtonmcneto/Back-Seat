@@ -53,12 +53,25 @@ public class EnemyController : MonoBehaviour, IHittable
     // Um pouco menor que metade do colisor (0,625 / 2 = 0,3125).
     [SerializeField] private float bodyRadius = 0.3f;
 
+    // Opcional. O desenho do inimigo morto (o corpo no chão). Filho direto do Enemy,
+    // começa desativado e aparece no lugar do Visual quando o inimigo morre.
+    // Se ficar vazio, o desenho vivo continua aparecendo parado.
+    [SerializeField] private GameObject deadVisual;
+
+    // Opcional. A arma que o inimigo larga ao morrer (o prefab WeaponPickup do Ailton).
+    // Se ficar vazio, ele não larga nada.
+    [SerializeField] private GameObject droppedWeapon;
+
     // Direção para onde o inimigo está olhando (tamanho 1). A visão usa isso.
     public Vector2 FacingDirection { get; private set; } = Vector2.right;
 
     // Quanto o contador de detecção já encheu, de 0 (nada) a 1 (identificou).
-    // A interrogação vai usar isso numa próxima tarefa.
+    // A interrogação usa isso para a cor.
     public float DetectionProgress => detectionTimer / detectionTime;
+
+    // Estados que a interrogação precisa ler (só leitura para os outros scripts)
+    public bool IsAlerted => state == EnemyState.Alert;
+    public bool IsDead => state == EnemyState.Dead;
 
     // Último lugar onde o jogador foi visto (por este inimigo ou por quem alertou a sala)
     public Vector2 LastKnownPlayerPosition { get; private set; }
@@ -405,6 +418,24 @@ public class EnemyController : MonoBehaviour, IHittable
         foreach (Collider2D enemyCollider in GetComponentsInChildren<Collider2D>())
         {
             enemyCollider.enabled = false;
+        }
+
+        // Troca o desenho vivo pelo corpo no chão, virado para o mesmo lado
+        if (deadVisual != null)
+        {
+            if (visual != null)
+            {
+                deadVisual.transform.rotation = visual.rotation;
+                visual.gameObject.SetActive(false);
+            }
+            deadVisual.SetActive(true);
+        }
+
+        // Larga a arma no chão, no lugar onde morreu. Fica dentro do mesmo objeto da sala,
+        // assim some junto quando a sala é recarregada.
+        if (droppedWeapon != null)
+        {
+            Instantiate(droppedWeapon, transform.position, Quaternion.identity, transform.parent);
         }
 
         // Avisa as outras partes do jogo (o Arthur conta os inimigos vivos da sala)
