@@ -53,6 +53,10 @@ public class EnemyController : MonoBehaviour, IHittable
     private float detectionTimer;
     private float forgetTimer;
 
+    // Verdadeiro depois do aviso PlayerDied. O corpo do jogador continua na cena com a tag
+    // Player, então sem isso o inimigo continuaria vendo e indo até ele.
+    private bool playerIsDead;
+
     // Posições dos pontos guardadas no início. Assim, mesmo que alguém coloque os pontos
     // como filhos do inimigo, eles não andam junto com ele.
     private Vector2[] patrolPositions;
@@ -96,10 +100,36 @@ public class EnemyController : MonoBehaviour, IHittable
         }
     }
 
+    private void OnEnable()
+    {
+        // Começa a escutar o aviso de morte do jogador (regra do AGENTS.md: inscreve no OnEnable)
+        GameEvents.PlayerDied += OnPlayerDied;
+    }
+
+    private void OnDisable()
+    {
+        // Para de escutar, para o aviso não chegar a um inimigo desligado ou destruído
+        GameEvents.PlayerDied -= OnPlayerDied;
+    }
+
+    // Chamado quando o jogador morre: o inimigo esquece tudo e volta a patrulhar.
+    // Ele não detecta mais ninguém até a sala ser recarregada pelo respawn.
+    private void OnPlayerDied()
+    {
+        playerIsDead = true;
+
+        if (state == EnemyState.Alert)
+        {
+            state = EnemyState.Patrol;
+        }
+        detectionTimer = 0f;
+        forgetTimer = 0f;
+    }
+
     private void Update()
     {
-        // Morto não vê nada
-        if (state == EnemyState.Dead)
+        // Morto não vê nada; com o jogador morto, não há o que ver
+        if (state == EnemyState.Dead || playerIsDead)
         {
             return;
         }
